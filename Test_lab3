@@ -1,0 +1,39 @@
+import pytest
+import allure
+import requests
+import json
+
+@allure.description("Get an Existing Booking id from Get All Bookings Ids , Update a Booking and Verify using GET by id.")
+@allure.title("Test_case3")
+def test_3(create_token):
+    url = "https://restful-booker.herokuapp.com/booking/"
+    response = requests.get(url)
+    assert response.status_code == 200
+    responsedata = response.json()
+    print(json.dumps(responsedata, indent=2))
+    URL = url + str(227)
+    cookie = "token=" + str(create_token)
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Cookie": cookie
+    }
+    payload = {
+        "firstname": "Ramesh",
+        "lastname": "Nashi"
+    }
+
+#Update a Booking using Patch
+    data = requests.patch(url=URL, headers=headers, json=payload)
+    json_data=data.json()
+    Data=json.dumps(json_data,indent=4)
+    assert data.status_code==200
+
+
+#Verified using GET by id.
+    Response_data=requests.get(URL)
+    Updated_data=Response_data.json()
+    json_response=json.dumps(Updated_data,indent=4)
+    print(json_response)
+    assert Updated_data["firstname"]=="Ramesh"
+    assert Response_data.status_code==200
