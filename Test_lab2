@@ -1,0 +1,50 @@
+import pytest
+import allure
+import requests
+import json
+import string
+
+@allure.description("Create a Booking")
+@allure.title("test case 2")
+@pytest.fixture(scope="module")
+def create_booking_id():
+    print("Create Booking ID!!")
+    URL = "https://restful-booker.herokuapp.com/booking"
+    headers = {"Content-Type": "application/json"}
+    json_payload = {
+        "firstname": "Jim",
+        "lastname": "Brown",
+        "totalprice": 111,
+        "depositpaid": True,
+        "bookingdates": {
+            "checkin": "2018-01-01",
+            "checkout": "2019-01-01"
+        },
+        "additionalneeds": "Breakfast"
+    }
+    response = requests.post(url=URL, headers=headers, json=json_payload)
+    data = response.json()
+    booking_id = data["bookingid"]
+    return booking_id
+
+@allure.description("Delete the Booking with ID")
+def test_Delete_the_Booking_with_ID(create_token, create_booking_id):
+    url = "https://restful-booker.herokuapp.com"
+    path = "/booking/" + str(create_booking_id)
+    Delete_URL = url + path
+    print(Delete_URL)
+    cookie = "token=" + str(create_token)
+    headers = {
+        "Content-Type": "application/json",
+        "Cookie": cookie
+    }
+    response = requests.delete(url=Delete_URL, headers=headers)
+    assert response.status_code == 201
+
+
+@allure.description("Verify using GET request that it should not exist.")
+def test_verify_booking_is_deleted(create_booking_id):
+    URL = "https://restful-booker.herokuapp.com/booking/" + str(create_booking_id)
+    response = requests.get(URL)
+    assert response.status_code == 404
+
