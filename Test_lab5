@@ -1,0 +1,25 @@
+import pytest
+import allure
+import requests
+import json
+import string
+
+@allure.description("Invalid Creation - enter a wrong payload or Wrong JSON.")
+@allure.title("test case 5")
+def test_create_booking_with_wrong_payload():
+    print("Create Booking ID!!")
+    URL = "https://restful-booker.herokuapp.com/booking"
+    headers = {"Content-Type": "application/json"}
+    json_payload = {
+        "firstname": 123,
+        "lastname": "Nashi",
+        "totalprice": 111,
+        "depositpaid": True,
+        "bookingdates": {
+            "checkin":0 ,
+            "checkout": "2019-01-01"
+        },
+        "additionalneeds": "Breakfast"
+    }
+    response = requests.post(url=URL, headers=headers, json=json_payload)
+    assert response.status_code!=200
